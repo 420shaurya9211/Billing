@@ -1,0 +1,5 @@
+{
+  "name": "MunimAI - Jewelry Billing & Loan Management",
+  "description": "An AI-powered management system for Indian jewelry shops, featuring billing audits, loan risk analysis, and customer insights using Gemini API.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,348 @@
+<Window x:Class="BillingApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="💎 Jewellery Billing — Excel Data Manager"
+        Height="800" Width="1200" MinHeight="600" MinWidth="900"
+        Background="{StaticResource BgDarkBrush}"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ═══ HEADER ═══ -->
+        <Border Grid.Row="0" Background="#12122A" Padding="20,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="💎" FontSize="28" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <StackPanel>
+                        <TextBlock Text="JEWELLERY BILLING" FontSize="20" FontWeight="Bold" 
+                                   Foreground="{StaticResource GoldAccentBrush}"/>
+                        <TextBlock Text="Excel Data Manager — Enter data and it saves directly to Excel"
+                                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="📂 Open Excel" Style="{StaticResource SecondaryButton}" 
+                            Click="OpenExcel_Click" Margin="0,0,8,0"/>
+                    <Button Content="🔄 Refresh" Style="{StaticResource SecondaryButton}" 
+                            Click="Refresh_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ═══ TAB CONTROL ═══ -->
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="12,8,12,4"
+                    SelectionChanged="Tab_Changed">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Background" Value="#1E1E3A"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="20,8"/>
+                    <Setter Property="Margin" Value="2,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="tabBorder" Background="#1E1E3A" CornerRadius="8,8,0,0" 
+                                        Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}">
+                                    <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="tabBorder" Property="Background" Value="#28284A"/>
+                                        <Setter Property="Foreground" Value="{StaticResource GoldAccentBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="tabBorder" Property="Background" Value="#252545"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- ═══ CUSTOMERS TAB ═══ -->
+            <TabItem Header="👤  CUSTOMERS">
+                <Border Background="#1A1A35" CornerRadius="0,8,8,8" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Customer Form -->
+                        <Border Grid.Row="0" Background="#20203D" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="ADD NEW CUSTOMER" FontSize="14" FontWeight="Bold"
+                                           Foreground="{StaticResource GoldAccentBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="CUSTOMER NAME *"/>
+                                        <TextBox x:Name="CustName" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="PHONE *"/>
+                                        <TextBox x:Name="CustPhone"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="ADDRESS *"/>
+                                        <TextBox x:Name="CustAddress"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="0">
+                                        <Label Content="GSTIN"/>
+                                        <TextBox x:Name="CustGstin"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" 
+                                                Orientation="Horizontal" Margin="0,8,0,0">
+                                        <Button Content="✅ Save Customer to Excel" Style="{StaticResource PrimaryButton}" 
+                                                Click="SaveCustomer_Click" Margin="0,0,10,0"/>
+                                        <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
+                                                Click="ClearCustomer_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Customer Grid -->
+                        <DataGrid Grid.Row="1" x:Name="CustomerGrid"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- ═══ INVOICES TAB ═══ -->
+            <TabItem Header="🧾  INVOICES">
+                <Border Background="#1A1A35" CornerRadius="0,8,8,8" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Background="#20203D" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="CREATE NEW INVOICE" FontSize="14" FontWeight="Bold"
+                                           Foreground="{StaticResource GoldAccentBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="CUSTOMER ID *"/>
+                                        <TextBox x:Name="InvCustId"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="ITEM DESCRIPTION *"/>
+                                        <TextBox x:Name="InvItem"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="METAL"/>
+                                        <ComboBox x:Name="InvMetal" SelectedIndex="0">
+                                            <ComboBoxItem Content="GOLD"/>
+                                            <ComboBoxItem Content="SILVER"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="WEIGHT (g) *"/>
+                                        <TextBox x:Name="InvWeight"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Grid.Row="0">
+                                        <Label Content="PURITY"/>
+                                        <ComboBox x:Name="InvPurity" SelectedIndex="1">
+                                            <ComboBoxItem Content="24K"/>
+                                            <ComboBoxItem Content="22K"/>
+                                            <ComboBoxItem Content="18K"/>
+                                            <ComboBoxItem Content="14K"/>
+                                            <ComboBoxItem Content="999"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="RATE PER GRAM (₹) *"/>
+                                        <TextBox x:Name="InvRate"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="MAKING CHARGES (₹)"/>
+                                        <TextBox x:Name="InvMaking" Text="0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="DISCOUNT (₹)"/>
+                                        <TextBox x:Name="InvDiscount" Text="0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="BILL TYPE"/>
+                                        <ComboBox x:Name="InvBillType" SelectedIndex="0">
+                                            <ComboBoxItem Content="PAKKA"/>
+                                            <ComboBoxItem Content="KACHA"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Grid.Row="1">
+                                        <Label Content="STATUS"/>
+                                        <ComboBox x:Name="InvStatus" SelectedIndex="0">
+                                            <ComboBoxItem Content="PAID"/>
+                                            <ComboBoxItem Content="PENDING"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
+                                                Orientation="Horizontal" Margin="0,8,0,0">
+                                        <Button Content="✅ Save Invoice to Excel" Style="{StaticResource PrimaryButton}" 
+                                                Click="SaveInvoice_Click" Margin="0,0,10,0"/>
+                                        <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
+                                                Click="ClearInvoice_Click" Margin="0,0,20,0"/>
+                                        <TextBlock x:Name="InvCalcPreview" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   VerticalAlignment="Center" FontSize="12"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <DataGrid Grid.Row="1" x:Name="InvoiceGrid"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- ═══ LOANS TAB ═══ -->
+            <TabItem Header="🏦  LOANS">
+                <Border Background="#1A1A35" CornerRadius="0,8,8,8" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Background="#20203D" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="NEW LOAN ENTRY" FontSize="14" FontWeight="Bold"
+                                           Foreground="{StaticResource GoldAccentBrush}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="CUSTOMER NAME *"/>
+                                        <TextBox x:Name="LoanCustName"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="PHONE *"/>
+                                        <TextBox x:Name="LoanPhone"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="GOV ID (Aadhaar/PAN) *"/>
+                                        <TextBox x:Name="LoanGovId"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="PRODUCT *"/>
+                                        <TextBox x:Name="LoanProduct"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Grid.Row="0">
+                                        <Label Content="METAL"/>
+                                        <ComboBox x:Name="LoanMetal" SelectedIndex="0">
+                                            <ComboBoxItem Content="GOLD"/>
+                                            <ComboBoxItem Content="SILVER"/>
+                                        </ComboBox>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="WEIGHT (g) *"/>
+                                        <TextBox x:Name="LoanWeight"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="PURITY"/>
+                                        <ComboBox x:Name="LoanPurity" SelectedIndex="0">
+                                            <ComboBoxItem Content="22K"/>
+                                            <ComboBoxItem Content="24K"/>
+                                            <ComboBoxItem Content="18K"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="PRINCIPAL (₹) *"/>
+                                        <TextBox x:Name="LoanPrincipal"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="INTEREST % (Monthly)"/>
+                                        <TextBox x:Name="LoanInterest" Text="1.5"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4" Grid.Row="1">
+                                        <Label Content="DUE DATE"/>
+                                        <TextBox x:Name="LoanDueDate" Text=""/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
+                                                Orientation="Horizontal" Margin="0,8,0,0">
+                                        <Button Content="✅ Save Loan to Excel" Style="{StaticResource PrimaryButton}" 
+                                                Click="SaveLoan_Click" Margin="0,0,10,0"/>
+                                        <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
+                                                Click="ClearLoan_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <DataGrid Grid.Row="1" x:Name="LoanGrid"/>
+                    </Grid>
+                </Border>
+            </TabItem>
+        </TabControl>
+
+        <!-- ═══ STATUS BAR ═══ -->
+        <Border Grid.Row="2" Background="#12122A" Padding="12,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Text="Ready — Enter data above and click Save"
+                           Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" VerticalAlignment="Center"/>
+                <TextBlock x:Name="ExcelPathText" Grid.Column="1" Foreground="{StaticResource TextSecondaryBrush}" 
+                           FontSize="11" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <TextBlock x:Name="RecordCountText" Grid.Column="2" Foreground="{StaticResource GoldAccentBrush}" 
+                           FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
