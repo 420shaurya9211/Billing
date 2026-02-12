@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="💎 Jewellery Billing — Excel Data Manager"
-        Height="800" Width="1200" MinHeight="600" MinWidth="900"
+        Height="850" Width="1250" MinHeight="600" MinWidth="900"
         Background="{StaticResource BgDarkBrush}"
         WindowStartupLocation="CenterScreen">
 
@@ -95,8 +95,6 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
@@ -158,26 +156,29 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                         <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
                                     </Grid.RowDefinitions>
 
+                                    <!-- Row 0: Customer ID, Address, Item, Metal, Purity -->
                                     <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
                                         <Label Content="CUSTOMER ID *"/>
                                         <TextBox x:Name="InvCustId"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="ADDRESS"/>
+                                        <TextBox x:Name="InvAddress"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
                                         <Label Content="ITEM DESCRIPTION *"/>
                                         <TextBox x:Name="InvItem"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
                                         <Label Content="METAL"/>
                                         <ComboBox x:Name="InvMetal" SelectedIndex="0">
                                             <ComboBoxItem Content="GOLD"/>
                                             <ComboBoxItem Content="SILVER"/>
                                         </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
-                                        <Label Content="WEIGHT (g) *"/>
-                                        <TextBox x:Name="InvWeight"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="4" Grid.Row="0">
                                         <Label Content="PURITY"/>
@@ -190,36 +191,84 @@
                                         </ComboBox>
                                     </StackPanel>
 
+                                    <!-- Row 1: Weight, Rate, Making, Discount, Bill Type -->
                                     <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
+                                        <Label Content="WEIGHT (g) *"/>
+                                        <TextBox x:Name="InvWeight"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="RATE PER GRAM (₹) *"/>
                                         <TextBox x:Name="InvRate"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="MAKING CHARGES (₹)"/>
                                         <TextBox x:Name="InvMaking" Text="0"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="DISCOUNT (₹)"/>
                                         <TextBox x:Name="InvDiscount" Text="0"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="4" Grid.Row="1">
                                         <Label Content="BILL TYPE"/>
                                         <ComboBox x:Name="InvBillType" SelectedIndex="0">
                                             <ComboBoxItem Content="PAKKA"/>
                                             <ComboBoxItem Content="KACHA"/>
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="1">
-                                        <Label Content="STATUS"/>
-                                        <ComboBox x:Name="InvStatus" SelectedIndex="0">
-                                            <ComboBoxItem Content="PAID"/>
-                                            <ComboBoxItem Content="PENDING"/>
-                                        </ComboBox>
-                                    </StackPanel>
 
-                                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
-                                                Orientation="Horizontal" Margin="0,8,0,0">
-                                        <Button Content="✅ Save Invoice to Excel" Style="{StaticResource PrimaryButton}" 
+                                    <!-- Row 2: Return Section -->
+                                    <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
+                                            Background="#1A1A35" CornerRadius="6" Padding="12" Margin="0,8,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,16,0">
+                                                <TextBlock Text="↩ RETURN ADJUSTMENT" FontSize="11" FontWeight="Bold"
+                                                           Foreground="#FF9800" Margin="0,0,0,6"/>
+                                                <RadioButton x:Name="ReturnByWeight" Content="By Weight" 
+                                                             Foreground="{StaticResource TextPrimaryBrush}" 
+                                                             GroupName="ReturnMode" IsChecked="True" Margin="0,0,0,4"
+                                                             Checked="ReturnMode_Changed"/>
+                                                <RadioButton x:Name="ReturnByAmount" Content="By Amount" 
+                                                             Foreground="{StaticResource TextPrimaryBrush}" 
+                                                             GroupName="ReturnMode"
+                                                             Checked="ReturnMode_Changed"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                                <Label Content="RETURN WEIGHT (g)"/>
+                                                <TextBox x:Name="InvReturnWeight" Text="0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Margin="0,0,8,0">
+                                                <Label Content="RETURN RATE (₹/g)"/>
+                                                <TextBox x:Name="InvReturnRate" Text="0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" Margin="0,0,8,0">
+                                                <Label Content="RETURN AMOUNT (₹)"/>
+                                                <TextBox x:Name="InvReturnAmount" Text="0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4">
+                                                <Label Content="STATUS"/>
+                                                <ComboBox x:Name="InvStatus" SelectedIndex="0">
+                                                    <ComboBoxItem Content="PAID"/>
+                                                    <ComboBoxItem Content="PENDING"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Row 3: Buttons & Preview -->
+                                    <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" 
+                                                Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button Content="🖨️ Preview &amp; Print" Style="{StaticResource SecondaryButton}" 
+                                                Click="PreviewInvoice_Click" Margin="0,0,10,0"/>
+                                        <Button Content="💾 Confirm &amp; Save to Excel" Style="{StaticResource PrimaryButton}" 
                                                 Click="SaveInvoice_Click" Margin="0,0,10,0"/>
                                         <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
                                                 Click="ClearInvoice_Click" Margin="0,0,20,0"/>
@@ -262,6 +311,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
 
+                                    <!-- Row 0 -->
                                     <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
                                         <Label Content="CUSTOMER NAME *"/>
                                         <TextBox x:Name="LoanCustName"/>
@@ -271,26 +321,31 @@
                                         <TextBox x:Name="LoanPhone"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                        <Label Content="ADDRESS *"/>
+                                        <TextBox x:Name="LoanAddress"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
                                         <Label Content="GOV ID (Aadhaar/PAN) *"/>
                                         <TextBox x:Name="LoanGovId"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="4" Grid.Row="0">
                                         <Label Content="PRODUCT *"/>
                                         <TextBox x:Name="LoanProduct"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="0">
+
+                                    <!-- Row 1 -->
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="METAL"/>
                                         <ComboBox x:Name="LoanMetal" SelectedIndex="0">
                                             <ComboBoxItem Content="GOLD"/>
                                             <ComboBoxItem Content="SILVER"/>
                                         </ComboBox>
                                     </StackPanel>
-
-                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="WEIGHT (g) *"/>
                                         <TextBox x:Name="LoanWeight"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="PURITY"/>
                                         <ComboBox x:Name="LoanPurity" SelectedIndex="0">
                                             <ComboBoxItem Content="22K"/>
@@ -298,21 +353,22 @@
                                             <ComboBoxItem Content="18K"/>
                                         </ComboBox>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
                                         <Label Content="PRINCIPAL (₹) *"/>
                                         <TextBox x:Name="LoanPrincipal"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="4" Grid.Row="1">
                                         <Label Content="INTEREST % (Monthly)"/>
                                         <TextBox x:Name="LoanInterest" Text="1.5"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="1">
-                                        <Label Content="DUE DATE"/>
-                                        <TextBox x:Name="LoanDueDate" Text=""/>
-                                    </StackPanel>
 
-                                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
-                                                Orientation="Horizontal" Margin="0,8,0,0">
+                                    <!-- Row 2: Start Date + Buttons -->
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Margin="0,0,8,0">
+                                        <Label Content="START DATE *"/>
+                                        <TextBox x:Name="LoanStartDate" Text=""/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4" 
+                                                Orientation="Horizontal" Margin="0,18,0,0">
                                         <Button Content="✅ Save Loan to Excel" Style="{StaticResource PrimaryButton}" 
                                                 Click="SaveLoan_Click" Margin="0,0,10,0"/>
                                         <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 

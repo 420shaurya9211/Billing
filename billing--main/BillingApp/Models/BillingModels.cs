@@ -23,6 +23,7 @@ public class Invoice
 {
     public string Id { get; set; } = "";
     public string CustomerId { get; set; } = "";
+    public string CustomerAddress { get; set; } = "";
     public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
     public string BillType { get; set; } = "PAKKA";    // PAKKA | KACHA
     public string ItemDescription { get; set; } = "";
@@ -38,6 +39,9 @@ public class Invoice
     public decimal IgstRate { get; set; }
     public decimal GstAmount { get; set; }
     public decimal TotalAmount { get; set; }
+    public decimal ReturnWeight { get; set; }
+    public decimal ReturnAmount { get; set; }
+    public decimal NetAmount { get; set; }
     public string Status { get; set; } = "PENDING";     // PAID | PENDING
 }
 
@@ -49,6 +53,7 @@ public class Loan
     public string Id { get; set; } = "";
     public string CustomerName { get; set; } = "";
     public string CustomerPhone { get; set; } = "";
+    public string CustomerAddress { get; set; } = "";
     public string GovId { get; set; } = "";
     public string MetalType { get; set; } = "GOLD";     // GOLD | SILVER
     public string ProductDescription { get; set; } = "";
@@ -57,7 +62,6 @@ public class Loan
     public decimal PrincipalAmount { get; set; }
     public decimal InterestRate { get; set; }
     public string StartDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
-    public string DueDate { get; set; } = DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd");
     public decimal TotalRepaid { get; set; }
     public string Status { get; set; } = "ACTIVE";      // ACTIVE | CLOSED | OVERDUE
 }
