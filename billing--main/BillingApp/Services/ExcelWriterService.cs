@@ -58,7 +58,7 @@ public sealed class ExcelWriterService : IDisposable
 
         // Customers sheet
         var cws = wb.AddWorksheet("Customers");
-        var cHeaders = new[] { "ID", "Name", "Phone", "Address", "GSTIN", "Total Purchases", "Active Loans", "Loyalty Points", "Join Date" };
+        var cHeaders = new[] { "ID", "Name", "Phone", "Address", "GSTIN", "Total Purchases", "Active Loans", "Loyalty Points", "Join Date", "Customer Type" };
         for (int i = 0; i < cHeaders.Length; i++)
             cws.Cell(1, i + 1).Value = cHeaders[i];
         StyleHeaderRow(cws, cHeaders.Length);
@@ -67,7 +67,7 @@ public sealed class ExcelWriterService : IDisposable
         var iws = wb.AddWorksheet("Invoices");
         var iHeaders = new[] { "ID", "Customer ID", "Address", "Date", "Bill Type", "Item", "Metal", "Weight(g)", "Purity",
             "Rate/g", "Making", "Discount", "Sub Total", "CGST%", "SGST%", "IGST%", "GST Amount", "Total",
-            "Return Weight", "Return Amount", "Net Amount", "Status" };
+            "Return Weight", "Return Amount", "Net Amount", "Status", "Phone" };
         for (int i = 0; i < iHeaders.Length; i++)
             iws.Cell(1, i + 1).Value = iHeaders[i];
         StyleHeaderRow(iws, iHeaders.Length);
@@ -75,7 +75,7 @@ public sealed class ExcelWriterService : IDisposable
         // Loans sheet
         var lws = wb.AddWorksheet("Loans");
         var lHeaders = new[] { "ID", "Customer Name", "Phone", "Address", "Gov ID", "Metal", "Product", "Weight(g)", "Purity",
-            "Principal", "Interest%", "Start Date", "Repaid", "Status" };
+            "Principal", "Interest%", "Start Date", "Repaid", "Status", "ID Type" };
         for (int i = 0; i < lHeaders.Length; i++)
             lws.Cell(1, i + 1).Value = lHeaders[i];
         StyleHeaderRow(lws, lHeaders.Length);
@@ -119,12 +119,72 @@ public sealed class ExcelWriterService : IDisposable
             ws.Cell(row, 7).Value = c.ActiveLoans;
             ws.Cell(row, 8).Value = c.LoyaltyPoints;
             ws.Cell(row, 9).Value = c.JoinDate;
+            ws.Cell(row, 10).Value = c.CustomerType;
 
-            StyleDataRow(ws, row, 9);
+            StyleDataRow(ws, row, 10);
             SaveWorkbook(wb);
             return row - 1;
         }
         finally { _lock.Release(); }
+    }
+
+    /// <summary>Auto-upsert customer by phone. Merges CustomerType (Purchase/Loan/Purchase+Loan).</summary>
+    public async Task UpsertCustomerAsync(string name, string phone, string address, string type)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return;
+
+        await _lock.WaitAsync();
+        try
+        {
+            using var wb = LoadWorkbook();
+            var ws = wb.Worksheet("Customers");
+            var lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+
+            // Search for existing customer by phone
+            for (int r = 2; r <= lastRow; r++)
+            {
+                if (ws.Cell(r, 3).GetString().Trim() == phone.Trim())
+                {
+                    // Merge customer type
+                    var existing = ws.Cell(r, 10).GetString();
+                    var merged = MergeCustomerType(existing, type);
+                    ws.Cell(r, 10).Value = merged;
+                    // Update name/address if provided
+                    if (!string.IsNullOrWhiteSpace(name)) ws.Cell(r, 2).Value = name;
+                    if (!string.IsNullOrWhiteSpace(address)) ws.Cell(r, 4).Value = address;
+                    SaveWorkbook(wb);
+                    return;
+                }
+            }
+
+            // New customer
+            int row = lastRow + 1;
+            ws.Cell(row, 1).Value = GetNextIdFromSheet(ws, "C");
+            ws.Cell(row, 2).Value = name;
+            ws.Cell(row, 3).Value = phone;
+            ws.Cell(row, 4).Value = address;
+            ws.Cell(row, 9).Value = DateTime.Now.ToString("yyyy-MM-dd");
+            ws.Cell(row, 10).Value = type;
+            StyleDataRow(ws, row, 10);
+            SaveWorkbook(wb);
+        }
+        finally { _lock.Release(); }
+    }
+
+    private static string MergeCustomerType(string existing, string newType)
+    {
+        if (string.IsNullOrWhiteSpace(existing)) return newType;
+        if (existing == newType) return existing;
+        if (existing == "Purchase + Loan") return existing;
+        if ((existing == "Purchase" && newType == "Loan") || (existing == "Loan" && newType == "Purchase"))
+            return "Purchase + Loan";
+        return newType;
+    }
+
+    private string GetNextIdFromSheet(IXLWorksheet ws, string prefix)
+    {
+        var lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+        return $"{prefix}{lastRow}";
     }
 
     public async Task<int> WriteInvoiceAsync(Invoice inv)
@@ -158,8 +218,9 @@ public sealed class ExcelWriterService : IDisposable
             ws.Cell(row, 20).Value = inv.ReturnAmount;
             ws.Cell(row, 21).Value = inv.NetAmount;
             ws.Cell(row, 22).Value = inv.Status;
+            ws.Cell(row, 23).Value = inv.CustomerPhone;
 
-            StyleDataRow(ws, row, 22);
+            StyleDataRow(ws, row, 23);
             SaveWorkbook(wb);
             return row - 1;
         }
@@ -189,8 +250,9 @@ public sealed class ExcelWriterService : IDisposable
             ws.Cell(row, 12).Value = loan.StartDate;
             ws.Cell(row, 13).Value = loan.TotalRepaid;
             ws.Cell(row, 14).Value = loan.Status;
+            ws.Cell(row, 15).Value = loan.GovIdType;
 
-            StyleDataRow(ws, row, 14);
+            StyleDataRow(ws, row, 15);
             SaveWorkbook(wb);
             return row - 1;
         }
@@ -219,7 +281,8 @@ public sealed class ExcelWriterService : IDisposable
                 TotalPurchases = GetDecimal(ws, r, 6),
                 ActiveLoans = (int)GetDecimal(ws, r, 7),
                 LoyaltyPoints = (int)GetDecimal(ws, r, 8),
-                JoinDate = ws.Cell(r, 9).GetString()
+                JoinDate = ws.Cell(r, 9).GetString(),
+                CustomerType = ws.Cell(r, 10).GetString()
             });
         }
         return list;
@@ -258,7 +321,8 @@ public sealed class ExcelWriterService : IDisposable
                 ReturnWeight = GetDecimal(ws, r, 19),
                 ReturnAmount = GetDecimal(ws, r, 20),
                 NetAmount = GetDecimal(ws, r, 21),
-                Status = ws.Cell(r, 22).GetString()
+                Status = ws.Cell(r, 22).GetString(),
+                CustomerPhone = ws.Cell(r, 23).GetString()
             });
         }
         return list;
@@ -289,7 +353,8 @@ public sealed class ExcelWriterService : IDisposable
                 InterestRate = GetDecimal(ws, r, 11),
                 StartDate = ws.Cell(r, 12).GetString(),
                 TotalRepaid = GetDecimal(ws, r, 13),
-                Status = ws.Cell(r, 14).GetString()
+                Status = ws.Cell(r, 14).GetString(),
+                GovIdType = ws.Cell(r, 15).GetString()
             });
         }
         return list;

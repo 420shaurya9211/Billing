@@ -14,6 +14,33 @@ public class Customer
     public int ActiveLoans { get; set; }
     public int LoyaltyPoints { get; set; }
     public string JoinDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    public string CustomerType { get; set; } = "";   // Purchase | Loan | Purchase + Loan
+}
+
+/// <summary>
+/// A single line-item in an invoice (one product).
+/// </summary>
+public class InvoiceItem
+{
+    public string ItemDescription { get; set; } = "";
+    public string Metal { get; set; } = "GOLD";
+    public string Purity { get; set; } = "22K";
+    public decimal Weight { get; set; }
+    public decimal RatePerGram { get; set; }
+    public decimal MakingCharges { get; set; }
+    /// <summary>Calculated: Weight × Rate + Making</summary>
+    public decimal Amount => (Weight * RatePerGram) + MakingCharges;
+}
+
+/// <summary>
+/// A single pledged item in a loan.
+/// </summary>
+public class LoanItem
+{
+    public string ProductDescription { get; set; } = "";
+    public string MetalType { get; set; } = "GOLD";
+    public string Purity { get; set; } = "22K";
+    public decimal Weight { get; set; }
 }
 
 /// <summary>
@@ -23,6 +50,7 @@ public class Invoice
 {
     public string Id { get; set; } = "";
     public string CustomerId { get; set; } = "";
+    public string CustomerPhone { get; set; } = "";
     public string CustomerAddress { get; set; } = "";
     public string Date { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
     public string BillType { get; set; } = "PAKKA";    // PAKKA | KACHA
@@ -43,6 +71,9 @@ public class Invoice
     public decimal ReturnAmount { get; set; }
     public decimal NetAmount { get; set; }
     public string Status { get; set; } = "PENDING";     // PAID | PENDING
+
+    /// <summary>Multi-item support: list of line-items in this invoice.</summary>
+    public List<InvoiceItem> Items { get; set; } = new();
 }
 
 /// <summary>
@@ -54,6 +85,7 @@ public class Loan
     public string CustomerName { get; set; } = "";
     public string CustomerPhone { get; set; } = "";
     public string CustomerAddress { get; set; } = "";
+    public string GovIdType { get; set; } = "AADHAAR";
     public string GovId { get; set; } = "";
     public string MetalType { get; set; } = "GOLD";     // GOLD | SILVER
     public string ProductDescription { get; set; } = "";
@@ -64,4 +96,10 @@ public class Loan
     public string StartDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
     public decimal TotalRepaid { get; set; }
     public string Status { get; set; } = "ACTIVE";      // ACTIVE | CLOSED | OVERDUE
+
+    /// <summary>Computed: PrincipalAmount × InterestRate / 100</summary>
+    public decimal MonthlyInterest => PrincipalAmount * InterestRate / 100;
+
+    /// <summary>Multi-item support: list of pledged items in this loan.</summary>
+    public List<LoanItem> Items { get; set; } = new();
 }

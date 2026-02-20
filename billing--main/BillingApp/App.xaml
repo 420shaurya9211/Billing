@@ -35,28 +35,32 @@
             <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
 
-        <!-- ComboBox Toggle Button Template -->
+        <!-- ComboBox ToggleButton Template -->
         <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="28"/>
                 </Grid.ColumnDefinitions>
-                <Border x:Name="Border" Grid.ColumnSpan="2" Background="#0F3460" 
+                <Border x:Name="Border" Grid.ColumnSpan="2" Background="#0F3460"
                         BorderBrush="#533483" BorderThickness="0,0,0,2" CornerRadius="4"/>
-                <Border Grid.Column="0" Background="Transparent" Margin="1"/>
-                <Path x:Name="Arrow" Grid.Column="1" Fill="#FFD700" HorizontalAlignment="Center" 
-                      VerticalAlignment="Center" Data="M 0 0 L 5 5 L 10 0 Z"/>
+                <Border Grid.Column="0" Background="Transparent" Margin="0" CornerRadius="4,0,0,4"/>
+                <Path x:Name="Arrow" Grid.Column="1" Fill="#EAEAEA"
+                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                      Data="M 0 0 L 4 4 L 8 0 Z"/>
             </Grid>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Border" Property="Background" Value="#1A3A6A"/>
+                    <Setter TargetName="Border" Property="Background" Value="#163D6E"/>
                     <Setter TargetName="Border" Property="BorderBrush" Value="#FFD700"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="#1A4A80"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!-- ComboBox Style -->
+        <!-- ComboBox Style with full dark-theme ControlTemplate -->
         <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="#EAEAEA"/>
             <Setter Property="FontSize" Value="13"/>
@@ -66,45 +70,66 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
+                            <ToggleButton Template="{StaticResource ComboBoxToggleButton}"
                                           IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                           Focusable="False" ClickMode="Press"/>
-                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False"
+                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
                                               Content="{TemplateBinding SelectionBoxItem}"
                                               ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              Margin="10,4,28,4" VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"/>
-                            <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="10,4,28,4" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#EAEAEA"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                            <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"
+                                     Background="Transparent" Foreground="#EAEAEA" CaretBrush="#FFD700"
+                                     HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,4,28,4"
+                                     Focusable="True" FontSize="13"/>
+                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
                                    AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
-                                <Grid Name="DropDown" SnapsToDevicePixels="True"
-                                      MinWidth="{TemplateBinding ActualWidth}" MaxHeight="300">
-                                    <Border x:Name="DropDownBorder" Background="#1A1A35" 
-                                            BorderBrush="#FFD700" BorderThickness="1" CornerRadius="4"
-                                            Padding="0,4"/>
-                                    <ScrollViewer Margin="4,6" SnapsToDevicePixels="True">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="#1E1E3A"
+                                            BorderBrush="#533483" BorderThickness="1" CornerRadius="0,0,4,4"/>
+                                    <ScrollViewer Margin="2" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                                     </ScrollViewer>
                                 </Grid>
                             </Popup>
                         </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEditable" Value="True">
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- ComboBoxItem Style — dark with gold accents -->
+        <!-- ComboBoxItem Style — visible on dark theme -->
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="#1E1E3A"/>
             <Setter Property="Foreground" Value="#EAEAEA"/>
-            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Padding" Value="8,6"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">
-                        <Border x:Name="Bd" Background="{TemplateBinding Background}" 
-                                Padding="{TemplateBinding Padding}" CornerRadius="3" Margin="2,1">
-                            <ContentPresenter/>
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}" BorderThickness="0">
+                            <ContentPresenter>
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ComboBoxItem}}"/>
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="True">
@@ -119,6 +144,17 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- DatePicker dark theme style -->
+        <Style TargetType="DatePicker">
+            <Setter Property="Background" Value="#0F3460"/>
+            <Setter Property="Foreground" Value="#EAEAEA"/>
+            <Setter Property="BorderBrush" Value="#533483"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
 
         <!-- Label Style -->

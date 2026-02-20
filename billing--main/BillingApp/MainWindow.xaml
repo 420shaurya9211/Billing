@@ -1,6 +1,7 @@
 <Window x:Class="BillingApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         Title="💎 Jewellery Billing — Excel Data Manager"
         Height="850" Width="1250" MinHeight="600" MinWidth="900"
         Background="{StaticResource BgDarkBrush}"
@@ -144,140 +145,179 @@
                             <StackPanel>
                                 <TextBlock Text="CREATE NEW INVOICE" FontSize="14" FontWeight="Bold"
                                            Foreground="{StaticResource GoldAccentBrush}" Margin="0,0,0,10"/>
-                                <Grid>
+
+                                <!-- Customer & Bill info row -->
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Row 0: Customer ID, Address, Item, Metal, Purity -->
-                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
                                         <Label Content="CUSTOMER ID *"/>
                                         <TextBox x:Name="InvCustId"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                        <Label Content="MOBILE NUMBER"/>
+                                        <TextBox x:Name="InvPhone"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="0,0,8,0">
                                         <Label Content="ADDRESS"/>
                                         <TextBox x:Name="InvAddress"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
-                                        <Label Content="ITEM DESCRIPTION *"/>
-                                        <TextBox x:Name="InvItem"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
-                                        <Label Content="METAL"/>
-                                        <ComboBox x:Name="InvMetal" SelectedIndex="0">
-                                            <ComboBoxItem Content="GOLD"/>
-                                            <ComboBoxItem Content="SILVER"/>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="0">
-                                        <Label Content="PURITY"/>
-                                        <ComboBox x:Name="InvPurity" SelectedIndex="1">
-                                            <ComboBoxItem Content="24K"/>
-                                            <ComboBoxItem Content="22K"/>
-                                            <ComboBoxItem Content="18K"/>
-                                            <ComboBoxItem Content="14K"/>
-                                            <ComboBoxItem Content="999"/>
-                                        </ComboBox>
-                                    </StackPanel>
-
-                                    <!-- Row 1: Weight, Rate, Making, Discount, Bill Type -->
-                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="WEIGHT (g) *"/>
-                                        <TextBox x:Name="InvWeight"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="RATE PER GRAM (₹) *"/>
-                                        <TextBox x:Name="InvRate"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="MAKING CHARGES (₹)"/>
-                                        <TextBox x:Name="InvMaking" Text="0"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="DISCOUNT (₹)"/>
-                                        <TextBox x:Name="InvDiscount" Text="0"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="1">
+                                    <StackPanel Grid.Column="3" Margin="0,0,8,0">
                                         <Label Content="BILL TYPE"/>
                                         <ComboBox x:Name="InvBillType" SelectedIndex="0">
                                             <ComboBoxItem Content="PAKKA"/>
                                             <ComboBoxItem Content="KACHA"/>
                                         </ComboBox>
                                     </StackPanel>
-
-                                    <!-- Row 2: Return Section -->
-                                    <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5" 
-                                            Background="#1A1A35" CornerRadius="6" Padding="12" Margin="0,8,0,0">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,16,0">
-                                                <TextBlock Text="↩ RETURN ADJUSTMENT" FontSize="11" FontWeight="Bold"
-                                                           Foreground="#FF9800" Margin="0,0,0,6"/>
-                                                <RadioButton x:Name="ReturnByWeight" Content="By Weight" 
-                                                             Foreground="{StaticResource TextPrimaryBrush}" 
-                                                             GroupName="ReturnMode" IsChecked="True" Margin="0,0,0,4"
-                                                             Checked="ReturnMode_Changed"/>
-                                                <RadioButton x:Name="ReturnByAmount" Content="By Amount" 
-                                                             Foreground="{StaticResource TextPrimaryBrush}" 
-                                                             GroupName="ReturnMode"
-                                                             Checked="ReturnMode_Changed"/>
-                                            </StackPanel>
-
-                                            <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                                                <Label Content="RETURN WEIGHT (g)"/>
-                                                <TextBox x:Name="InvReturnWeight" Text="0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="2" Margin="0,0,8,0">
-                                                <Label Content="RETURN RATE (₹/g)"/>
-                                                <TextBox x:Name="InvReturnRate" Text="0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="3" Margin="0,0,8,0">
-                                                <Label Content="RETURN AMOUNT (₹)"/>
-                                                <TextBox x:Name="InvReturnAmount" Text="0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="4">
-                                                <Label Content="STATUS"/>
-                                                <ComboBox x:Name="InvStatus" SelectedIndex="0">
-                                                    <ComboBoxItem Content="PAID"/>
-                                                    <ComboBoxItem Content="PENDING"/>
-                                                </ComboBox>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-
-                                    <!-- Row 3: Buttons & Preview -->
-                                    <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" 
-                                                Orientation="Horizontal" Margin="0,10,0,0">
-                                        <Button Content="🖨️ Preview &amp; Print" Style="{StaticResource SecondaryButton}" 
-                                                Click="PreviewInvoice_Click" Margin="0,0,10,0"/>
-                                        <Button Content="📋 Dummy Invoice" Style="{StaticResource SecondaryButton}" 
-                                                Click="DummyInvoice_Click" Margin="0,0,10,0"/>
-                                        <Button Content="💾 Confirm &amp; Save to Excel" Style="{StaticResource PrimaryButton}" 
-                                                Click="SaveInvoice_Click" Margin="0,0,10,0"/>
-                                        <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
-                                                Click="ClearInvoice_Click" Margin="0,0,20,0"/>
-                                        <TextBlock x:Name="InvCalcPreview" Foreground="{StaticResource TextSecondaryBrush}"
-                                                   VerticalAlignment="Center" FontSize="12"/>
+                                    <StackPanel Grid.Column="4" Margin="0,0,8,0">
+                                        <Label Content="INVOICE DATE"/>
+                                        <DatePicker x:Name="InvDate" SelectedDate="{x:Static sys:DateTime.Today}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="5">
+                                        <Label Content="DISCOUNT (₹)"/>
+                                        <TextBox x:Name="InvDiscount" Text="0"/>
                                     </StackPanel>
                                 </Grid>
+
+                                <!-- ── ADD ITEM sub-form ── -->
+                                <Border Background="#1A1A35" CornerRadius="6" Padding="10" Margin="0,0,0,6">
+                                    <StackPanel>
+                                        <TextBlock Text="➕ ADD ITEM" FontSize="11" FontWeight="Bold"
+                                                   Foreground="#4FC3F7" Margin="0,0,0,6"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                                <Label Content="ITEM DESCRIPTION *"/>
+                                                <TextBox x:Name="InvItem"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="0,0,6,0">
+                                                <Label Content="METAL"/>
+                                                <ComboBox x:Name="InvMetal" SelectedIndex="0">
+                                                    <ComboBoxItem Content="GOLD"/>
+                                                    <ComboBoxItem Content="SILVER"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Margin="0,0,6,0">
+                                                <Label Content="PURITY (%) *"/>
+                                                <TextBox x:Name="InvPurity" Text="91.6"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" Margin="0,0,6,0">
+                                                <Label Content="WEIGHT (g) *"/>
+                                                <TextBox x:Name="InvWeight"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" Margin="0,0,6,0">
+                                                <Label Content="RATE/g (₹) *"/>
+                                                <TextBox x:Name="InvRate"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="5" Margin="0,0,6,0">
+                                                <Label Content="MAKING (₹)"/>
+                                                <TextBox x:Name="InvMaking" Text="0"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="6" Content="➕ Add" Style="{StaticResource PrimaryButton}"
+                                                    Click="AddInvoiceItem_Click" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Items DataGrid -->
+                                <DataGrid x:Name="InvItemsGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                                          MaxHeight="180" Margin="0,0,0,6" IsReadOnly="True"
+                                          Background="#1A1A35" RowBackground="#20203D" AlternatingRowBackground="#252548"
+                                          Foreground="{StaticResource TextPrimaryBrush}" BorderThickness="0"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333360">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Item" Binding="{Binding ItemDescription}" Width="2*"/>
+                                        <DataGridTextColumn Header="Metal" Binding="{Binding Metal}" Width="*"/>
+                                        <DataGridTextColumn Header="Purity" Binding="{Binding Purity}" Width="*"/>
+                                        <DataGridTextColumn Header="Weight(g)" Binding="{Binding Weight, StringFormat=N3}" Width="*"/>
+                                        <DataGridTextColumn Header="Rate/g" Binding="{Binding RatePerGram, StringFormat=N0}" Width="*"/>
+                                        <DataGridTextColumn Header="Making" Binding="{Binding MakingCharges, StringFormat=N0}" Width="*"/>
+                                        <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N2}" Width="*"/>
+                                        <DataGridTemplateColumn Header="" Width="Auto">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="🗑️" Click="RemoveInvoiceItem_Click"
+                                                            Background="Transparent" Foreground="Red" BorderThickness="0"
+                                                            Cursor="Hand" FontSize="12" Padding="4,2"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!-- Return Section -->
+                                <Border Background="#1A1A35" CornerRadius="6" Padding="12" Margin="0,0,0,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,16,0">
+                                            <TextBlock Text="↩ RETURN ADJUSTMENT" FontSize="11" FontWeight="Bold"
+                                                       Foreground="#FF9800" Margin="0,0,0,6"/>
+                                            <RadioButton x:Name="ReturnByWeight" Content="By Weight" 
+                                                         Foreground="{StaticResource TextPrimaryBrush}" 
+                                                         GroupName="ReturnMode" IsChecked="True" Margin="0,0,0,4"
+                                                         Checked="ReturnMode_Changed"/>
+                                            <RadioButton x:Name="ReturnByAmount" Content="By Amount" 
+                                                         Foreground="{StaticResource TextPrimaryBrush}" 
+                                                         GroupName="ReturnMode"
+                                                         Checked="ReturnMode_Changed"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                                            <Label Content="RETURN WEIGHT (g)"/>
+                                            <TextBox x:Name="InvReturnWeight" Text="0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Margin="0,0,8,0">
+                                            <Label Content="RETURN RATE (₹/g)"/>
+                                            <TextBox x:Name="InvReturnRate" Text="0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3" Margin="0,0,8,0">
+                                            <Label Content="RETURN AMOUNT (₹)"/>
+                                            <TextBox x:Name="InvReturnAmount" Text="0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="4">
+                                            <Label Content="STATUS"/>
+                                            <ComboBox x:Name="InvStatus" SelectedIndex="0">
+                                                <ComboBoxItem Content="PAID"/>
+                                                <ComboBoxItem Content="PENDING"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Buttons & Preview -->
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Button Content="🖨️ Preview &amp; Print" Style="{StaticResource SecondaryButton}" 
+                                            Click="PreviewInvoice_Click" Margin="0,0,10,0"/>
+                                    <Button Content="📋 Dummy Invoice" Style="{StaticResource SecondaryButton}" 
+                                            Click="DummyInvoice_Click" Margin="0,0,10,0"/>
+                                    <Button Content="💾 Confirm &amp; Save to Excel" Style="{StaticResource PrimaryButton}" 
+                                            Click="SaveInvoice_Click" Margin="0,0,10,0"/>
+                                    <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
+                                            Click="ClearInvoice_Click" Margin="0,0,20,0"/>
+                                    <TextBlock x:Name="InvCalcPreview" Foreground="{StaticResource TextSecondaryBrush}"
+                                               VerticalAlignment="Center" FontSize="12"/>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
@@ -299,7 +339,9 @@
                             <StackPanel>
                                 <TextBlock Text="NEW LOAN ENTRY" FontSize="14" FontWeight="Bold"
                                            Foreground="{StaticResource GoldAccentBrush}" Margin="0,0,0,10"/>
-                                <Grid>
+
+                                <!-- Customer info row -->
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
@@ -307,80 +349,126 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-
-                                    <!-- Row 0 -->
-                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
                                         <Label Content="CUSTOMER NAME *"/>
                                         <TextBox x:Name="LoanCustName"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
                                         <Label Content="PHONE *"/>
                                         <TextBox x:Name="LoanPhone"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="2" Margin="0,0,8,0">
                                         <Label Content="ADDRESS *"/>
                                         <TextBox x:Name="LoanAddress"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="0" Margin="0,0,8,0">
-                                        <Label Content="GOV ID (Aadhaar/PAN) *"/>
+                                    <StackPanel Grid.Column="3" Margin="0,0,8,0">
+                                        <Label Content="ID TYPE *"/>
+                                        <ComboBox x:Name="LoanIdType" SelectedIndex="0">
+                                            <ComboBoxItem Content="AADHAAR"/>
+                                            <ComboBoxItem Content="PAN"/>
+                                            <ComboBoxItem Content="DRIVING LICENSE"/>
+                                            <ComboBoxItem Content="VOTER ID"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="4">
+                                        <Label Content="ID NUMBER *"/>
                                         <TextBox x:Name="LoanGovId"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="0">
-                                        <Label Content="PRODUCT *"/>
-                                        <TextBox x:Name="LoanProduct"/>
-                                    </StackPanel>
+                                </Grid>
 
-                                    <!-- Row 1 -->
-                                    <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="METAL"/>
-                                        <ComboBox x:Name="LoanMetal" SelectedIndex="0">
-                                            <ComboBoxItem Content="GOLD"/>
-                                            <ComboBoxItem Content="SILVER"/>
-                                        </ComboBox>
+                                <!-- ── ADD ITEM sub-form ── -->
+                                <Border Background="#1A1A35" CornerRadius="6" Padding="10" Margin="0,0,0,6">
+                                    <StackPanel>
+                                        <TextBlock Text="➕ ADD PLEDGED ITEM" FontSize="11" FontWeight="Bold"
+                                                   Foreground="#4FC3F7" Margin="0,0,0,6"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                                <Label Content="PRODUCT *"/>
+                                                <TextBox x:Name="LoanProduct"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="0,0,6,0">
+                                                <Label Content="METAL"/>
+                                                <ComboBox x:Name="LoanMetal" SelectedIndex="0">
+                                                    <ComboBoxItem Content="GOLD"/>
+                                                    <ComboBoxItem Content="SILVER"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Margin="0,0,6,0">
+                                                <Label Content="PURITY (%) *"/>
+                                                <TextBox x:Name="LoanPurity" Text="91.6"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" Margin="0,0,6,0">
+                                                <Label Content="WEIGHT (g) *"/>
+                                                <TextBox x:Name="LoanWeight"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="4" Content="➕ Add" Style="{StaticResource PrimaryButton}"
+                                                    Click="AddLoanItem_Click" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
+                                        </Grid>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="WEIGHT (g) *"/>
-                                        <TextBox x:Name="LoanWeight"/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Grid.Row="1" Margin="0,0,8,0">
-                                        <Label Content="PURITY"/>
-                                        <ComboBox x:Name="LoanPurity" SelectedIndex="0">
-                                            <ComboBoxItem Content="22K"/>
-                                            <ComboBoxItem Content="24K"/>
-                                            <ComboBoxItem Content="18K"/>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="3" Grid.Row="1" Margin="0,0,8,0">
+                                </Border>
+
+                                <!-- Items DataGrid -->
+                                <DataGrid x:Name="LoanItemsGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                                          MaxHeight="180" Margin="0,0,0,6" IsReadOnly="True"
+                                          Background="#1A1A35" RowBackground="#20203D" AlternatingRowBackground="#252548"
+                                          Foreground="{StaticResource TextPrimaryBrush}" BorderThickness="0"
+                                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333360">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Product" Binding="{Binding ProductDescription}" Width="2*"/>
+                                        <DataGridTextColumn Header="Metal" Binding="{Binding MetalType}" Width="*"/>
+                                        <DataGridTextColumn Header="Purity" Binding="{Binding Purity}" Width="*"/>
+                                        <DataGridTextColumn Header="Weight(g)" Binding="{Binding Weight, StringFormat=N3}" Width="*"/>
+                                        <DataGridTemplateColumn Header="" Width="Auto">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="🗑️" Click="RemoveLoanItem_Click"
+                                                            Background="Transparent" Foreground="Red" BorderThickness="0"
+                                                            Cursor="Hand" FontSize="12" Padding="4,2"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <!-- Financial fields row -->
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
                                         <Label Content="PRINCIPAL (₹) *"/>
                                         <TextBox x:Name="LoanPrincipal"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="4" Grid.Row="1">
+                                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
                                         <Label Content="INTEREST % (Monthly)"/>
                                         <TextBox x:Name="LoanInterest" Text="1.5"/>
                                     </StackPanel>
-
-                                    <!-- Row 2: Start Date + Buttons -->
-                                    <StackPanel Grid.Column="0" Grid.Row="2" Margin="0,0,8,0">
+                                    <StackPanel Grid.Column="2">
                                         <Label Content="START DATE *"/>
-                                        <TextBox x:Name="LoanStartDate" Text=""/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4" 
-                                                Orientation="Horizontal" Margin="0,18,0,0">
-                                        <Button Content="🖨️ Preview &amp; Print Loan" Style="{StaticResource SecondaryButton}" 
-                                                Click="PreviewLoanInvoice_Click" Margin="0,0,10,0"/>
-                                        <Button Content="📋 Dummy Loan Invoice" Style="{StaticResource SecondaryButton}" 
-                                                Click="DummyLoanInvoice_Click" Margin="0,0,10,0"/>
-                                        <Button Content="✅ Save Loan to Excel" Style="{StaticResource PrimaryButton}" 
-                                                Click="SaveLoan_Click" Margin="0,0,10,0"/>
-                                        <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
-                                                Click="ClearLoan_Click"/>
+                                        <DatePicker x:Name="LoanStartDatePicker" SelectedDate="{x:Static sys:DateTime.Today}"/>
                                     </StackPanel>
                                 </Grid>
+
+                                <!-- Buttons -->
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Button Content="🖨️ Preview &amp; Print Loan" Style="{StaticResource SecondaryButton}" 
+                                            Click="PreviewLoanInvoice_Click" Margin="0,0,10,0"/>
+                                    <Button Content="📋 Dummy Loan Invoice" Style="{StaticResource SecondaryButton}" 
+                                            Click="DummyLoanInvoice_Click" Margin="0,0,10,0"/>
+                                    <Button Content="✅ Save Loan to Excel" Style="{StaticResource PrimaryButton}" 
+                                            Click="SaveLoan_Click" Margin="0,0,10,0"/>
+                                    <Button Content="🧹 Clear" Style="{StaticResource SecondaryButton}" 
+                                            Click="ClearLoan_Click"/>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
